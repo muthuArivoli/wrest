@@ -819,13 +819,7 @@ impl WinHttpSession {
         )?;
 
         let handle = WinHttpHandle(h_session);
-        let unload_event = match abi::WinHttpUnloadEvent::new(handle.0) {
-            Ok(event) => Some(event),
-            Err(_error) => {
-                warn!(error = %_error, "Failed to set up WinHTTP unload notification; continuing without it");
-                None
-            }
-        };
+        let unload_event = abi::WinHttpUnloadEvent::new(handle.0).ok();
         // Attempt to install the unload fence before registering any callback,
         // including null-context session/connection callbacks and error paths.
         let session = Self {
